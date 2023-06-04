@@ -1,0 +1,8 @@
+{% include 'header.html' %}
+<h1>Galerie</h1>
+{% for image in images %}
+    <img src="{{ url_for('uploaded_file', filename=image.path) }}" width="300">
+    <p>Métadonnées : {{ image.metadata }}</p>
+{% endfor %}
+</body>
+</html>
