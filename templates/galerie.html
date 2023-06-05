@@ -4,6 +4,7 @@
   {% for image in images|sort(attribute='path') %}
   <div class="card">
     <img src="{{ url_for('static', filename=image.thumbnail) }}" />
+    <button class="delete-btn" data-image-id="{{ image.id }}">Delete</button>
     <div class="card-content">
       <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
       <p>
@@ -29,3 +30,30 @@
   </div>
   {% endfor %}
 </div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", (event) => {
+    const deleteButtons = document.querySelectorAll(".delete-btn");
+    deleteButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const imageId = e.target.getAttribute("data-image-id");
+        fetch(`/delete-image/${imageId}`, {
+          method: "DELETE",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Optionally remove the image from the UI
+              e.target.parentElement.remove();
+            } else {
+              // Handle error
+              console.error("Failed to delete image:", data.error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+    });
+  });
+</script>

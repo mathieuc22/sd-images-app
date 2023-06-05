@@ -1,6 +1,6 @@
 {% include 'header.html' %}
 <h1>Répertoires</h1>
-{% for directory in directories %}
+{% for directory in directories|sort %}
 <a href="{{ url_for('galerie', directory=directory) }}">{{ directory }}</a>
 {% endfor %}
 </body>

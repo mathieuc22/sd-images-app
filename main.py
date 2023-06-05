@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, send_from_directory
+from flask import Flask, render_template, url_for, send_from_directory, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 from PIL import Image as PILImage
@@ -185,6 +185,24 @@ def generate_thumbnails():
                         db.session.add(image)
     db.session.commit()
     return "Thumbnails generated and database updated"
+
+
+@app.route("/delete-image/<int:image_id>", methods=["DELETE"])
+def delete_image(image_id):
+    image = Image.query.get(image_id)
+    if image is None:
+        return jsonify(success=False), 404
+
+    try:
+        os.remove(image.path)  # delete original image
+        os.remove(os.path.join(app.static_folder, image.thumbnail))  # delete thumbnail
+    except Exception as e:
+        return jsonify(success=False, error=str(e)), 500
+
+    db.session.delete(image)
+    db.session.commit()
+
+    return jsonify(success=True), 200
 
 
 if __name__ == "__main__":
