@@ -1,20 +1,31 @@
-{% include 'header.html' %} {% for image in images %}
-<img src="{{ url_for('static', filename=image.thumbnail) }}" width="300" />
-<p><strong>Parameters:</strong> {{ image.parameters }}</p>
-{% if image.negative_prompt %}
-<p><strong>Negative Prompt:</strong> {{ image.negative_prompt }}</p>
-{% endif %} {% if image.steps %}
-<p><strong>Steps:</strong> {{ image.steps }}</p>
-{% endif %} {% if image.sampler %}
-<p><strong>Sampler:</strong> {{ image.sampler }}</p>
-{% endif %} {% if image.cfg_scale %}
-<p><strong>CFG Scale:</strong> {{ image.cfg_scale }}</p>
-{% endif %} {% if image.seed %}
-<p><strong>Seed:</strong> {{ image.seed }}</p>
-{% endif %} {% if image.size %}
-<p><strong>Size:</strong> {{ image.size }}</p>
-{% endif %} {% if image.model_hash %}
-<p><strong>Model Hash:</strong> {{ image.model_hash }}</p>
-{% endif %} {% if image.model %}
-<p><strong>Model:</strong> {{ image.model }}</p>
-{% endif %} {% endfor %}
+{% include 'header.html' %}
+
+<div class="gallery">
+  {% for image in images|sort(attribute='path') %}
+  <div class="card">
+    <img src="{{ url_for('static', filename=image.thumbnail) }}" />
+    <div class="card-content">
+      <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
+      <p>
+        <strong>Parameters:</strong> {{ image.parameters|truncate(80, end='...')
+        }}
+      </p>
+      {% if image.steps %}
+      <p><strong>Steps:</strong> {{ image.steps }}</p>
+      {% endif %} {% if image.sampler %}
+      <p><strong>Sampler:</strong> {{ image.sampler }}</p>
+      {% endif %} {% if image.cfg_scale %}
+      <p><strong>CFG Scale:</strong> {{ image.cfg_scale }}</p>
+      {% endif %} {% if image.seed %}
+      <p><strong>Seed:</strong> {{ image.seed }}</p>
+      {% endif %} {% if image.size %}
+      <p><strong>Size:</strong> {{ image.size }}</p>
+      {% endif %} {% if image.model_hash %}
+      <p><strong>Model Hash:</strong> {{ image.model_hash }}</p>
+      {% endif %} {% if image.model %}
+      <p><strong>Model:</strong> {{ image.model }}</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
