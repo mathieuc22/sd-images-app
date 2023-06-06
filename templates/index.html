@@ -1,7 +1,5 @@
-{% include 'header.html' %}
+{% include 'base.html' %} {% block content %}
 <h1>Répertoires</h1>
 {% for directory in directories|sort %}
 <a href="{{ url_for('galerie', directory=directory) }}">{{ directory }}</a>
-{% endfor %}
-</body>
-</html>
+{% endfor %} {% endblock %}
