@@ -236,7 +236,7 @@ def unlike_image(image_id):
 @app.route("/images-with-likes")
 def images_with_likes():
     images = Image.query.filter(Image.liked == True).all()
-    return jsonify(images=[i.path for i in images]), 200
+    return render_template("galerie.html", images=images)
 
 
 if __name__ == "__main__":
