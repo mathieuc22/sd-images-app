@@ -28,6 +28,20 @@ def galerie(directory):
     return render_template("galerie.html", images=images)
 
 
+@current_app.route("/galerie/<int:image_id>")
+def image(image_id):
+    image = Image.query.get(image_id)
+    if image:
+        image_data = image.__dict__
+        image_data.pop(
+            "_sa_instance_state", None
+        )  # Supprimer l'attribut interne indésirable
+
+        return jsonify(image_data), 200
+    else:
+        return jsonify(error="Image not found"), 404
+
+
 @current_app.route("/admin/generate-thumbnails")
 def generate_thumbnails():
     for directory in get_directory_list():

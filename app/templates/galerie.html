@@ -1,12 +1,13 @@
 {% include 'base.html' %} {% block content %}
 <div class="gallery">
   {% for image in images|sort(attribute='path') %}
-  <div class="card">
+  <div class="card" data-image-id="{{ image.id }}">
     <img src="{{ url_for('static', filename=image.thumbnail) }}" />
     <button class="like-btn" data-image-id="{{ image.id }}">
       {% if image.liked %} Unlike {% else %} Like {% endif %}
     </button>
     <button class="delete-btn" data-image-id="{{ image.id }}">Delete</button>
+    <button class="params-btn" data-image-id="{{ image.id }}">Params</button>
     <div class="card-content">
       <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
       <p>
