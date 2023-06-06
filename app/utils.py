@@ -1,7 +1,8 @@
 import os
 import re
-from PIL import Image as PILImage
+
 from flask import current_app
+from PIL import Image as PILImage
 
 
 def get_directory_list():

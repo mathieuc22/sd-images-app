@@ -1,8 +1,10 @@
-from flask import render_template, url_for, send_from_directory, jsonify, current_app
+import os
+
+from flask import current_app, jsonify, render_template, send_from_directory, url_for
+
 from app import db
 from app.models import Image
-from app.utils import get_directory_list, create_thumbnail, get_sd_info
-import os
+from app.utils import create_thumbnail, get_directory_list, get_sd_info
 
 
 @current_app.route("/")
