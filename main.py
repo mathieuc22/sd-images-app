@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from PIL import Image as PILImage
 import re
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config[
@@ -11,6 +12,8 @@ app.config[
 app.config["THUMBNAIL_FOLDER"] = "thumbnails"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 
 class Image(db.Model):
@@ -26,6 +29,7 @@ class Image(db.Model):
     size = db.Column(db.String(100))
     model_hash = db.Column(db.String(200))
     model = db.Column(db.String(200))
+    liked = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f"<Image {self.path}>"
@@ -184,7 +188,7 @@ def generate_thumbnails():
                         )
                         db.session.add(image)
     db.session.commit()
-    return "Thumbnails generated and database updated"
+    return jsonify(success=True), 200
 
 
 @app.route("/delete-image/<int:image_id>", methods=["DELETE"])
@@ -203,6 +207,36 @@ def delete_image(image_id):
     db.session.commit()
 
     return jsonify(success=True), 200
+
+
+@app.route("/like-image/<int:image_id>", methods=["POST"])
+def like_image(image_id):
+    image = Image.query.get(image_id)
+    if image is None:
+        return jsonify(success=False), 404
+
+    image.liked = True
+    db.session.commit()
+
+    return jsonify(success=True), 200
+
+
+@app.route("/unlike-image/<int:image_id>", methods=["POST"])
+def unlike_image(image_id):
+    image = Image.query.get(image_id)
+    if image is None:
+        return jsonify(success=False), 404
+
+    image.liked = False
+    db.session.commit()
+
+    return jsonify(success=True), 200
+
+
+@app.route("/images-with-likes")
+def images_with_likes():
+    images = Image.query.filter(Image.liked == True).all()
+    return jsonify(images=[i.path for i in images]), 200
 
 
 if __name__ == "__main__":

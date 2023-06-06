@@ -4,6 +4,9 @@
   {% for image in images|sort(attribute='path') %}
   <div class="card">
     <img src="{{ url_for('static', filename=image.thumbnail) }}" />
+    <button class="like-btn" data-image-id="{{ image.id }}">
+      {% if image.liked %} Unlike {% else %} Like {% endif %}
+    </button>
     <button class="delete-btn" data-image-id="{{ image.id }}">Delete</button>
     <div class="card-content">
       <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
@@ -33,6 +36,31 @@
 
 <script>
   window.addEventListener("DOMContentLoaded", (event) => {
+    const likeButtons = document.querySelectorAll(".like-btn");
+    likeButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const imageId = e.target.getAttribute("data-image-id");
+        const isLiked = e.target.textContent.trim().toLowerCase() === "unlike";
+        const url = isLiked
+          ? `/unlike-image/${imageId}`
+          : `/like-image/${imageId}`;
+
+        fetch(url, { method: "POST" })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Update the like button text
+              e.target.textContent = isLiked ? "Like" : "Unlike";
+            } else {
+              // Handle error
+              console.error("Failed to like/unlike image:", data.error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+    });
     const deleteButtons = document.querySelectorAll(".delete-btn");
     deleteButtons.forEach((btn) => {
       btn.addEventListener("click", (e) => {
