@@ -81,7 +81,7 @@ function scrollToTop() {
 
 function checkScroll() {
   if (window.scrollY > 300) {
-    document.querySelector("#back-to-top").style.display = "block";
+    document.querySelector("#back-to-top").style.display = "flex";
   } else {
     document.querySelector("#back-to-top").style.display = "none";
   }

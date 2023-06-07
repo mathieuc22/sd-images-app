@@ -16,15 +16,20 @@
   </head>
   <body>
     <button id="back-to-top"><i class="fas fa-arrow-up"></i></button>
-    <nav>
-      <a href="{{ url_for('index') }}">Accueil</a>
-      <a
-        id="generate-thumbnails-button"
-        href="{{ url_for('generate_thumbnails') }}"
-        >Générer les Vignettes</a
-      >
-      <a href="{{ url_for('images_with_likes') }}">Images Aimées</a>
-    </nav>
+    <header>
+      <nav>
+        <a class="nav-link" href="{{ url_for('index') }}">Accueil</a>
+        <a
+          class="nav-link"
+          id="generate-thumbnails-button"
+          href="{{ url_for('generate_thumbnails') }}"
+          >Générer les Vignettes</a
+        >
+        <a class="nav-link" href="{{ url_for('images_with_likes') }}"
+          >Images Aimées</a
+        >
+      </nav>
+    </header>
     <main>
       <!-- Le contenu principal de la page ira ici -->
       {% block content %}{% endblock %}

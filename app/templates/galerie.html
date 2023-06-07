@@ -3,7 +3,10 @@
   {% for image in images|sort(attribute='path') %}
   <div class="card" data-image-id="{{ image.id }}">
     <a href="{{ url_for('image_detail', image_id=image.id) }}">
-      <img src="{{ url_for('static', filename=image.thumbnail) }}" />
+      <img
+        src="{{ url_for('static', filename=image.thumbnail) }}"
+        loading="lazy"
+      />
     </a>
     <button class="btn like-btn">
       {% if image.liked %} Unlike {% else %} Like {% endif %}
