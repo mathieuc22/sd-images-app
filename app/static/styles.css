@@ -1,3 +1,124 @@
+/*
+  The CSS in this style tag is based off of Bear Blog's default CSS.
+  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
+  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+ */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap");
+
+/* Variables */
+
+:root {
+  --font-family-base: Verdana, sans-serif;
+  --font-family-headings: "Montserrat", sans-serif;
+  --color-primary: rgb(var(--accent));
+  --accent: 50, 115, 220;
+  --color-secondary: #fff;
+  --color-accent: #fd6f53;
+  --font-color: #444;
+  --font-color-headings: #222;
+  --color-code: #f2f2f2;
+  --color-switch: rgb(199, 199, 199);
+}
+
+/* Base */
+
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Components */
+
+body {
+  margin: auto;
+  padding: 20px;
+  font-family: var(--font-family-base);
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 14px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b {
+  margin: 0;
+  color: var(--font-color-headings);
+}
+p {
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+}
+a {
+  color: var(--color-primary);
+}
+textarea {
+  width: 100%;
+  font-size: 16px;
+  font-family: var(--font-family-base);
+}
+input {
+  font-size: 16px;
+  font-family: var(--font-family-base);
+}
+content {
+  line-height: 1.6;
+}
+table {
+  width: 100%;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+code {
+  padding: 2px 5px;
+  background-color: var(--color-code);
+}
+pre {
+  padding: 1rem;
+}
+pre > code {
+  all: unset;
+}
+blockquote {
+  border: 1px solid #999;
+  color: #222;
+  padding: 2px 0px 2px 20px;
+  margin: 0px;
+  font-style: italic;
+}
+li {
+  margin-left: 1rem;
+}
+
+/* Réinitialisation des boutons */
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Galerie */
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -62,4 +183,69 @@
 
 .show {
   display: block;
+}
+
+/* Détails de l'image */
+.image-detail {
+  display: flex;
+}
+
+.image-section {
+  width: 50%;
+}
+
+.full-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.info-section {
+  width: 50%;
+  padding: 20px;
+}
+
+.image-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-info-item {
+  margin-bottom: 10px;
+}
+
+.image-info-item__title {
+  margin: 0;
+}
+
+.image-info-item__content {
+  margin: 0;
+}
+
+/* Navigation */
+.navigation {
+  margin-top: 10px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #f2f2f2;
+  color: #333;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #ddd;
+}
+
+.like-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
 }

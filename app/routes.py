@@ -42,6 +42,47 @@ def image(image_id):
         return jsonify(error="Image not found"), 404
 
 
+@current_app.route("/image/<int:image_id>")
+def image_detail(image_id):
+    current_image = Image.query.get(image_id)
+    if current_image:
+        return render_template("image.html", image=current_image)
+    else:
+        return jsonify(error="Image not found"), 404
+
+
+@current_app.route("/image/<int:image_id>/next")
+def next_image(image_id):
+    current_image = Image.query.get(image_id)
+    if not current_image:
+        return jsonify(error="Image not found"), 404
+
+    next_image = (
+        Image.query.filter(Image.id > current_image.id).order_by(Image.id).first()
+    )
+    if next_image:
+        return render_template("image.html", image=next_image)
+    else:
+        return jsonify(error="No next image"), 404
+
+
+@current_app.route("/image/<int:image_id>/prev")
+def prev_image(image_id):
+    current_image = Image.query.get(image_id)
+    if not current_image:
+        return jsonify(error="Image not found"), 404
+
+    prev_image = (
+        Image.query.filter(Image.id < current_image.id)
+        .order_by(Image.id.desc())
+        .first()
+    )
+    if prev_image:
+        return render_template("image.html", image=prev_image)
+    else:
+        return jsonify(error="No previous image"), 404
+
+
 @current_app.route("/admin/generate-thumbnails")
 def generate_thumbnails():
     for directory in get_directory_list():

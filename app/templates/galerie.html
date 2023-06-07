@@ -2,12 +2,14 @@
 <div class="gallery">
   {% for image in images|sort(attribute='path') %}
   <div class="card" data-image-id="{{ image.id }}">
-    <img src="{{ url_for('static', filename=image.thumbnail) }}" />
-    <button class="like-btn">
+    <a href="{{ url_for('image_detail', image_id=image.id) }}">
+      <img src="{{ url_for('static', filename=image.thumbnail) }}" />
+    </a>
+    <button class="btn like-btn">
       {% if image.liked %} Unlike {% else %} Like {% endif %}
     </button>
-    <button class="delete-btn">Delete</button>
-    <button class="params-btn">Params</button>
+    <button class="btn delete-btn">Delete</button>
+    <button class="btn params-btn">Params</button>
     <div class="card-content">
       <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
       <p>

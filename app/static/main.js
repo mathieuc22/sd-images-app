@@ -91,6 +91,15 @@ function loadImage(imageId) {
       }
       imageContainer.appendChild(img);
 
+      Object.keys(imageData).forEach((key) => {
+        if (key !== "path" && key !== "liked") {
+          const detailElement = document.createElement("div");
+          detailElement.classList.add("detail");
+          detailElement.textContent = `${key}: ${imageData[key]}`;
+          detailsContainer.appendChild(detailElement);
+        }
+      });
+
       const likeBtn = document.createElement("button");
       likeBtn.classList.add("like-btn");
       likeBtn.setAttribute("data-image-id", imageId);
@@ -104,8 +113,6 @@ function loadImage(imageId) {
       deleteBtn.textContent = "Delete";
       deleteBtn.addEventListener("click", handleDelete);
       detailsContainer.appendChild(deleteBtn);
-
-      // Ajoutez plus de détails ici si vous le souhaitez
     })
     .catch(handleError);
 
@@ -134,11 +141,11 @@ function loadImage(imageId) {
 // Attacher les écouteurs d'événements lorsque le document est chargé
 window.addEventListener("DOMContentLoaded", () => {
   // Attacher les écouteurs d'événements
-  document.querySelectorAll(".card img").forEach((image) => {
-    image.addEventListener("click", (e) => {
-      loadImage(image.parentElement.getAttribute("data-image-id"));
-    });
-  });
+  // document.querySelectorAll(".card img").forEach((image) => {
+  //   image.addEventListener("click", (e) => {
+  //     loadImage(image.parentElement.getAttribute("data-image-id"));
+  //   });
+  // });
 
   document
     .querySelector("#generate-thumbnails-button")

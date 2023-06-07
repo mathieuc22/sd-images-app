@@ -1,0 +1,37 @@
+{% include 'base.html' %} {% block content %}
+<div class="image-detail">
+  <div class="image-section">
+    <img
+      src="{{ url_for('uploaded_file', filename=image.path.split('/')[-2] + '/' + image.path.split('/')[-1]) }}"
+      class="full-image"
+    />
+  </div>
+  <div class="info-section">
+    <div class="navigation">
+      <a class="btn" href="{{ url_for('prev_image', image_id=image.id) }}"
+        >Previous</a
+      >
+      <a class="btn" href="{{ url_for('next_image', image_id=image.id) }}"
+        >Next</a
+      >
+    </div>
+    <div class="navigation">
+      <button class="btn like-btn">
+        {% if image.liked %} Unlike {% else %} Like {% endif %}
+      </button>
+      <button class="btn delete-btn">Delete</button>
+    </div>
+
+    <div class="image-content">
+      {% set keys = ['path', 'parameters', 'negative_prompt', 'sampler',
+      'cfg_scale', 'steps', 'seed', 'size', 'model', 'model_hash'] %} {% for key
+      in keys %} {% if image.__dict__[key] %}
+      <div class="image-info-item">
+        <h3 class="image-info-item__title">{{ key|title }}</h3>
+        <p class="image-info-item__content">{{ image.__dict__[key] }}</p>
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
