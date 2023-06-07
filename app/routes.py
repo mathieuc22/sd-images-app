@@ -1,6 +1,6 @@
 import os
 
-from flask import current_app, jsonify, render_template, send_from_directory, url_for
+from flask import current_app, jsonify, render_template, send_from_directory, request
 
 from app import db
 from app.models import Image
@@ -28,25 +28,22 @@ def galerie(directory):
     return render_template("galerie.html", images=images)
 
 
-@current_app.route("/galerie/<int:image_id>")
-def image(image_id):
-    image = Image.query.get(image_id)
-    if image:
-        image_data = image.__dict__
-        image_data.pop(
-            "_sa_instance_state", None
-        )  # Supprimer l'attribut interne indésirable
-
-        return jsonify(image_data), 200
-    else:
-        return jsonify(error="Image not found"), 404
-
-
 @current_app.route("/image/<int:image_id>")
 def image_detail(image_id):
+    json_output = request.args.get(
+        "json", default=False, type=lambda v: v.lower() == "true"
+    )
     current_image = Image.query.get(image_id)
     if current_image:
-        return render_template("image.html", image=current_image)
+        if json_output:
+            current_image = current_image.__dict__
+            current_image.pop(
+                "_sa_instance_state", None
+            )  # Supprimer l'attribut interne indésirable
+
+            return jsonify(current_image), 200
+        else:
+            return render_template("image.html", image=current_image)
     else:
         return jsonify(error="Image not found"), 404
 
@@ -58,7 +55,7 @@ def next_image(image_id):
         return jsonify(error="Image not found"), 404
 
     next_image = (
-        Image.query.filter(Image.id > current_image.id).order_by(Image.id).first()
+        Image.query.filter(Image.path > current_image.path).order_by(Image.path).first()
     )
     if next_image:
         return render_template("image.html", image=next_image)
@@ -73,8 +70,8 @@ def prev_image(image_id):
         return jsonify(error="Image not found"), 404
 
     prev_image = (
-        Image.query.filter(Image.id < current_image.id)
-        .order_by(Image.id.desc())
+        Image.query.filter(Image.path < current_image.path)
+        .order_by(Image.path.desc())
         .first()
     )
     if prev_image:
