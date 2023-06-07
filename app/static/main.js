@@ -20,7 +20,12 @@ function generateThumbnails(event) {
 
 // Fonction pour gérer les likes
 function handleLike(event) {
-  const imageId = event.target.parentElement.getAttribute("data-image-id");
+  let imageId;
+  if (window.location.pathname.includes("image")) {
+    imageId = window.location.pathname.split("/").pop();
+  } else {
+    imageId = event.target.parentElement.getAttribute("data-image-id");
+  }
   const isLiked = event.target.textContent.trim().toLowerCase() === "unlike";
   const url = isLiked ? `/unlike-image/${imageId}` : `/like-image/${imageId}`;
 
@@ -39,8 +44,6 @@ function handleLike(event) {
 
 // Fonction pour gérer les paramètres
 function handleParams(event) {
-  const imageId = event.target.parentElement.getAttribute("data-image-id");
-
   // Toggle card-content
   event.target.parentElement
     .querySelector(".card-content")
@@ -49,13 +52,22 @@ function handleParams(event) {
 
 // Fonction pour gérer les suppressions
 function handleDelete(event) {
-  const imageId = event.target.parentElement.getAttribute("data-image-id");
+  let imageId;
+  if (window.location.pathname.includes("image")) {
+    imageId = window.location.pathname.split("/").pop();
+  } else {
+    imageId = event.target.parentElement.getAttribute("data-image-id");
+  }
   fetch(`/delete-image/${imageId}`, { method: "DELETE" })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
         // Optionally remove the image from the UI
-        event.target.parentElement.remove();
+        if (window.location.pathname.includes("image")) {
+          window.location = document.referrer;
+        } else {
+          event.target.parentElement.remove();
+        }
       } else {
         console.error("Failed to delete image:", data.error);
       }

@@ -125,6 +125,7 @@ def generate_thumbnails():
                             model=metadata_info.get("model", ""),
                         )
                         db.session.add(image)
+                    print(image)
     db.session.commit()
     return jsonify(success=True), 200
 
