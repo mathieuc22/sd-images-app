@@ -75,6 +75,18 @@ function handleDelete(event) {
     .catch(handleError);
 }
 
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function checkScroll() {
+  if (window.scrollY > 300) {
+    document.querySelector("#back-to-top").style.display = "block";
+  } else {
+    document.querySelector("#back-to-top").style.display = "none";
+  }
+}
+
 // Attacher les écouteurs d'événements lorsque le document est chargé
 window.addEventListener("DOMContentLoaded", () => {
   document
@@ -92,4 +104,7 @@ window.addEventListener("DOMContentLoaded", () => {
   document
     .querySelectorAll(".params-btn")
     .forEach((btn) => btn.addEventListener("click", handleParams));
+
+  document.querySelector("#back-to-top").addEventListener("click", scrollToTop);
+  window.addEventListener("scroll", checkScroll);
 });
