@@ -36,6 +36,12 @@ def galerie(directory):
     return render_template("galerie.html", images=images)
 
 
+@current_app.route("/images")
+def images():
+    images = Image.query.all()
+    return render_template("galerie.html", images=images)
+
+
 @current_app.route("/image/<int:image_id>")
 def image_detail(image_id):
     json_output = request.args.get(
@@ -132,12 +138,16 @@ def delete_image(image_id):
             os.path.join(current_app.static_folder, image.thumbnail)
         )  # delete thumbnail
     except Exception as e:
-        return jsonify(success=False, error=str(e)), 500
+        # return jsonify(success=False, error=str(e)), 500
+        print(str(e))
 
+    next_image = (
+        Image.query.filter(Image.path > image.path).order_by(Image.path).first()
+    )
     db.session.delete(image)
     db.session.commit()
 
-    return jsonify(success=True), 200
+    return jsonify(success=True, next_image=next_image.id), 200
 
 
 @current_app.route("/like-image/<int:image_id>", methods=["POST"])

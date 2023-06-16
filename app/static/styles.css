@@ -207,6 +207,10 @@ nav {
   color: var(--color-accent);
 }
 
+.navigation {
+  margin-bottom: 5px;
+}
+
 .btn {
   display: inline-block;
   padding: 8px 16px;

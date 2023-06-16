@@ -10,6 +10,11 @@
     <div class="navigation">
       <a
         class="btn"
+        href="{{ url_for('galerie', directory=image.path.split('/')[-2]) }}"
+        >Retour à la galerie</a
+      >
+      <a
+        class="btn"
         id="prev-btn"
         href="{{ url_for('prev_image', image_id=image.id) }}"
         >Previous</a

@@ -64,7 +64,13 @@ function handleDelete(event) {
       if (data.success) {
         // Optionally remove the image from the UI
         if (window.location.pathname.includes("image")) {
-          window.location = document.referrer;
+          // window.location = document.referrer;
+          window.location =
+            window.location
+              .toString()
+              .slice(0, window.location.toString().lastIndexOf("/")) +
+            "/" +
+            data.next_image;
         } else {
           event.target.parentElement.remove();
         }
