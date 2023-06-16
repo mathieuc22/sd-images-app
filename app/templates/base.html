@@ -25,9 +25,19 @@
           href="{{ url_for('generate_thumbnails') }}"
           >Générer les Vignettes</a
         >
+        <a class="nav-link" href="{{ url_for('images') }}">Toutes les images</a>
         <a class="nav-link" href="{{ url_for('images_with_likes') }}"
           >Images Aimées</a
         >
+
+        <form
+          action="{{ url_for('search_images') }}"
+          method="get"
+          class="nav-search-form"
+        >
+          <input type="text" name="q" placeholder="Rechercher des images..." />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
       </nav>
     </header>
     <main>

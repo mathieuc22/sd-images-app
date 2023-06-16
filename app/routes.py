@@ -3,12 +3,13 @@ import os
 from flask import (
     current_app,
     jsonify,
-    render_template,
-    send_from_directory,
-    request,
     redirect,
+    render_template,
+    request,
+    send_from_directory,
     url_for,
 )
+from sqlalchemy import func, and_
 
 from app import db
 from app.models import Image
@@ -26,6 +27,12 @@ def uploaded_file(filename):
     return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
 
 
+@current_app.route("/galerie")
+def images():
+    images = Image.query.all()
+    return render_template("galerie.html", images=images)
+
+
 @current_app.route("/galerie/<directory>")
 def galerie(directory):
     images = Image.query.filter(
@@ -36,9 +43,18 @@ def galerie(directory):
     return render_template("galerie.html", images=images)
 
 
-@current_app.route("/images")
-def images():
-    images = Image.query.all()
+@current_app.route("/search")
+def search_images():
+    search_query = request.args.get(
+        "q", ""
+    )  # obtenir la chaîne de caractères de la requête
+    keywords = search_query.split()  # diviser la chaîne en mots clés
+    # Construire une liste de conditions pour la requête. Chaque mot clé doit être dans les paramètres.
+    conditions = [
+        func.lower(Image.parameters).contains(func.lower(keyword))
+        for keyword in keywords
+    ]
+    images = Image.query.filter(and_(*conditions)).all()  # effectuer la recherche
     return render_template("galerie.html", images=images)
 
 
