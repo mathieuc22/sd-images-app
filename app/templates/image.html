@@ -8,10 +8,16 @@
   </div>
   <div class="info-section">
     <div class="navigation">
-      <a class="btn" href="{{ url_for('prev_image', image_id=image.id) }}"
+      <a
+        class="btn"
+        id="prev-btn"
+        href="{{ url_for('prev_image', image_id=image.id) }}"
         >Previous</a
       >
-      <a class="btn" href="{{ url_for('next_image', image_id=image.id) }}"
+      <a
+        class="btn"
+        id="next-btn"
+        href="{{ url_for('next_image', image_id=image.id) }}"
         >Next</a
       >
     </div>
@@ -19,7 +25,7 @@
       <button class="btn like-btn">
         {% if image.liked %} Unlike {% else %} Like {% endif %}
       </button>
-      <button class="btn delete-btn">Delete</button>
+      <button class="btn delete-btn" id="delete-btn">Delete</button>
     </div>
 
     <div class="image-content">
@@ -34,4 +40,28 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("keydown", function (event) {
+    const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Delete"
+
+    if (key === "ArrowLeft") {
+      const prevBtn = document.getElementById("prev-btn");
+      if (prevBtn) {
+        window.location.href = prevBtn.href;
+      }
+    } else if (key === "ArrowRight") {
+      const nextBtn = document.getElementById("next-btn");
+      if (nextBtn) {
+        window.location.href = nextBtn.href;
+      }
+    } else if (key === "Delete") {
+      const deleteBtn = document.getElementById("delete-btn");
+      if (deleteBtn) {
+        deleteBtn.click();
+      }
+    }
+  });
+</script>
+
 {% endblock %}
