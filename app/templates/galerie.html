@@ -2,11 +2,13 @@
 <div class="title">
   <h1>{{ directory }}</h1>
   <div class="count">{{ images|length }}</div>
+  {% if directory not in ["Likes", "Recherche", "Toutes les images"] %}
   <a
     class="update"
     href="{{ url_for('generate_thumbnails_for_dir', directory=directory) }}"
     ><i class="fas fa-sync"></i
   ></a>
+  {% endif %}
 </div>
 <div class="gallery">
   {% for image in images|sort(attribute='path') %}
