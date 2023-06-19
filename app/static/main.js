@@ -18,6 +18,33 @@ function generateThumbnails(event) {
     .catch(handleError);
 }
 
+function handleUpdate(event) {
+  event.preventDefault(); // Pour éviter le comportement par défaut du clic sur le lien
+  directoryName = event.currentTarget.getAttribute("href").split("/").pop();
+
+  // Trouver l'élément icône et ajouter la classe 'rotate'
+  const iconElement = event.currentTarget.querySelector("i");
+  iconElement.classList.add("rotate");
+
+  fetch(`/admin/generate-thumbnails/${directoryName}`)
+    .then((response) => response.json())
+    .then((data) => {
+      // Enlever la classe 'rotate' une fois la requête finie
+      iconElement.classList.remove("rotate");
+
+      if (data.success) {
+        alert("Les vignettes ont été générées avec succès !");
+      } else {
+        alert("Une erreur s'est produite lors de la génération des vignettes.");
+      }
+    })
+    .catch((error) => {
+      // Enlever la classe 'rotate' même si une erreur s'est produite
+      iconElement.classList.remove("rotate");
+      handleError(error);
+    });
+}
+
 // Fonction pour gérer les likes
 function handleLike(event) {
   let imageId;
@@ -95,9 +122,15 @@ function checkScroll() {
 
 // Attacher les écouteurs d'événements lorsque le document est chargé
 window.addEventListener("DOMContentLoaded", () => {
+  if (window.location.pathname.includes("admin")) {
+    document
+      .querySelector("#generate-thumbnails-button")
+      .addEventListener("click", generateThumbnails);
+  }
+
   document
-    .querySelector("#generate-thumbnails-button")
-    .addEventListener("click", generateThumbnails);
+    .querySelectorAll(".directory__update")
+    .forEach((btn) => btn.addEventListener("click", handleUpdate));
 
   document
     .querySelectorAll(".like-btn")

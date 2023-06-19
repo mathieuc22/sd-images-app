@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block content %}
+<div class="title">
+  <h1>Administration</h1>
+</div>
+<div class="admin">
+  <div>Répertoire source SD : {{ uploaded_folder }}</div>
+  <div>Mettre à jour la base de données :</div>
+  <a
+    class="nav-link"
+    id="generate-thumbnails-button"
+    href="{{ url_for('generate_thumbnails') }}"
+    >Générer les Vignettes</a
+  >
+</div>
+{% endblock %}

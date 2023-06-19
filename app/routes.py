@@ -142,6 +142,37 @@ def generate_thumbnails():
     return jsonify(success=True), 200
 
 
+@current_app.route("/admin/generate-thumbnails/<directory>")
+def generate_thumbnails_for_dir(directory):
+    basepath = os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
+    for filename in os.listdir(basepath):
+        image_path = os.path.join(basepath, filename)
+        # Check if the image already exists in the database
+        image = Image.query.filter_by(path=image_path).first()
+        if not image and os.path.isfile(image_path):
+            thumbnail_path = create_thumbnail(image_path, directory)
+            metadata_info = get_sd_info(image_path)
+            if metadata_info is not None:
+                # Create a new image record
+                image = Image(
+                    path=image_path,
+                    thumbnail=thumbnail_path,
+                    parameters=str(metadata_info.get("parameters", "")),
+                    negative_prompt=str(metadata_info.get("negative_prompt", "")),
+                    steps=metadata_info.get("steps", 0),
+                    sampler=metadata_info.get("sampler", ""),
+                    cfg_scale=metadata_info.get("cfg_scale", 0.0),
+                    seed=metadata_info.get("seed", 0),
+                    size=metadata_info.get("size", ""),
+                    model_hash=metadata_info.get("model_hash", ""),
+                    model=metadata_info.get("model", ""),
+                )
+                db.session.add(image)
+                print(image)
+    db.session.commit()
+    return jsonify(success=True), 200
+
+
 @current_app.route("/delete-image/<int:image_id>", methods=["DELETE"])
 def delete_image(image_id):
     image = Image.query.get(image_id)
@@ -194,3 +225,10 @@ def unlike_image(image_id):
 def images_with_likes():
     images = Image.query.filter(Image.liked == True).all()
     return render_template("galerie.html", images=images, directory="Likes")
+
+
+@current_app.route("/admin")
+def administration():
+    return render_template(
+        "admin.html", uploaded_folder=current_app.config["UPLOAD_FOLDER"]
+    )

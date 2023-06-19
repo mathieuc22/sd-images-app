@@ -85,5 +85,5 @@ def create_thumbnail(image_path, directory, size=(300, 300)):
     if not os.path.exists(thumbnail_path):
         with PILImage.open(image_path) as img:
             img.thumbnail(size)
-            img.save(thumbnail_path)
+            img.save(thumbnail_path, "JPEG")
     return relative_path

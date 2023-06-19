@@ -19,11 +19,8 @@
     <header>
       <nav>
         <a class="nav-link" href="{{ url_for('index') }}">Accueil</a>
-        <a
-          class="nav-link"
-          id="generate-thumbnails-button"
-          href="{{ url_for('generate_thumbnails') }}"
-          >Générer les Vignettes</a
+        <a class="nav-link" href="{{ url_for('administration') }}"
+          >Administration</a
         >
         <a class="nav-link" href="{{ url_for('images') }}">Toutes les images</a>
         <a class="nav-link" href="{{ url_for('images_with_likes') }}"

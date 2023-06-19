@@ -2,9 +2,18 @@
 <h1 class="title">Répertoires</h1>
 <div class="directories">
   {% for directory in directories|sort %}
-  <a class="directory" href="{{ url_for('galerie', directory=directory) }}"
-    >{{ directory }}</a
-  >
+  <div class="directory">
+    <a
+      class="directory__link"
+      href="{{ url_for('galerie', directory=directory) }}"
+      >{{ directory }}</a
+    >
+    <a
+      class="directory__update"
+      href="{{ url_for('generate_thumbnails_for_dir', directory=directory) }}"
+      ><i class="fas fa-sync"></i
+    ></a>
+  </div>
   {% endfor %}
 </div>
 {% endblock %}
