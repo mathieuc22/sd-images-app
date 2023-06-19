@@ -1,10 +1,10 @@
-{% include 'base.html' %} {% block content %}
-<h1>Répertoires</h1>
-<ul>
+{% extends 'base.html' %} {% block content %}
+<h1 class="title">Répertoires</h1>
+<div class="directories">
   {% for directory in directories|sort %}
-  <li>
-    <a href="{{ url_for('galerie', directory=directory) }}">{{ directory }}</a>
-  </li>
+  <a class="directory" href="{{ url_for('galerie', directory=directory) }}"
+    >{{ directory }}</a
+  >
   {% endfor %}
-</ul>
+</div>
 {% endblock %}

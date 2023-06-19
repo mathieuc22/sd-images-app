@@ -188,7 +188,6 @@ header {
   padding: 10px 20px;
   background-color: var(--color-code);
   border-radius: 15px;
-  margin-bottom: 20px;
 }
 
 nav {
@@ -224,6 +223,38 @@ nav {
 
 .btn:hover {
   background-color: var(--color-switch);
+}
+
+.title {
+  position: relative;
+  width: fit-content;
+  margin: auto;
+  text-align: center;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.directories {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.directory {
+  margin: 0;
+  padding: 20px 30px;
+  background-color: var(--color-code);
+  color: var(--font-color);
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .like-btn {
@@ -262,6 +293,18 @@ nav {
   color: var(--color-accent);
 }
 
+.count {
+  position: absolute;
+  top: 20px;
+  right: -10px;
+  background: var(--color-accent);
+  padding: 1px 6px;
+  border-radius: 20px;
+  color: var(--color-secondary);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
 .nav-search-form {
   display: flex;
   align-items: center;
@@ -279,20 +322,20 @@ nav {
 .nav-search-form button {
   padding: 10px;
   border: none;
-  background: #f8f9fa;
+  background: var(--color-accent);
   border-radius: 0 20px 20px 0;
   cursor: pointer;
   outline: none;
 }
 
 .nav-search-form button i {
-  color: #495057;
+  color: var(--color-secondary);
 }
 
 .nav-search-form button:hover {
-  background: #e2e6ea;
+  background: var(--font-color);
 }
 
 .nav-search-form button:active {
-  background: #ced4da;
+  background: var(--color-accent-green);
 }

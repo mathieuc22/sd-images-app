@@ -30,7 +30,7 @@ def uploaded_file(filename):
 @current_app.route("/galerie")
 def images():
     images = Image.query.all()
-    return render_template("galerie.html", images=images)
+    return render_template("galerie.html", images=images, directory="Toutes les images")
 
 
 @current_app.route("/galerie/<directory>")
@@ -40,7 +40,7 @@ def galerie(directory):
             os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
         )
     ).all()
-    return render_template("galerie.html", images=images)
+    return render_template("galerie.html", images=images, directory=directory)
 
 
 @current_app.route("/search")
@@ -55,7 +55,7 @@ def search_images():
         for keyword in keywords
     ]
     images = Image.query.filter(and_(*conditions)).all()  # effectuer la recherche
-    return render_template("galerie.html", images=images)
+    return render_template("galerie.html", images=images, directory="Recherche")
 
 
 @current_app.route("/image/<int:image_id>")
@@ -193,4 +193,4 @@ def unlike_image(image_id):
 @current_app.route("/images-with-likes")
 def images_with_likes():
     images = Image.query.filter(Image.liked == True).all()
-    return render_template("galerie.html", images=images)
+    return render_template("galerie.html", images=images, directory="Likes")
