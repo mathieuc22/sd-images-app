@@ -319,6 +319,13 @@ nav {
   font-size: 0.8rem;
 }
 
+.update {
+  position: absolute;
+  top: 40px;
+  right: -10px;
+  padding: 1px 6px;
+}
+
 .nav-search-form {
   display: flex;
   align-items: center;

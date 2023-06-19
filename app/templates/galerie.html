@@ -2,6 +2,11 @@
 <div class="title">
   <h1>{{ directory }}</h1>
   <div class="count">{{ images|length }}</div>
+  <a
+    class="update"
+    href="{{ url_for('generate_thumbnails_for_dir', directory=directory) }}"
+    ><i class="fas fa-sync"></i
+  ></a>
 </div>
 <div class="gallery">
   {% for image in images|sort(attribute='path') %}

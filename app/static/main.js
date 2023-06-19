@@ -20,7 +20,12 @@ function generateThumbnails(event) {
 
 function handleUpdate(event) {
   event.preventDefault(); // Pour éviter le comportement par défaut du clic sur le lien
-  directoryName = event.currentTarget.getAttribute("href").split("/").pop();
+  let directoryName;
+  if (window.location.pathname.includes("galerie")) {
+    directoryName = window.location.pathname.split("/").pop();
+  } else {
+    directoryName = event.currentTarget.getAttribute("href").split("/").pop();
+  }
 
   // Trouver l'élément icône et ajouter la classe 'rotate'
   const iconElement = event.currentTarget.querySelector("i");
@@ -36,6 +41,10 @@ function handleUpdate(event) {
         alert("Les vignettes ont été générées avec succès !");
       } else {
         alert("Une erreur s'est produite lors de la génération des vignettes.");
+      }
+
+      if (window.location.pathname.includes("galerie")) {
+        location.reload();
       }
     })
     .catch((error) => {
@@ -130,6 +139,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document
     .querySelectorAll(".directory__update")
+    .forEach((btn) => btn.addEventListener("click", handleUpdate));
+
+  document
+    .querySelectorAll(".update")
     .forEach((btn) => btn.addEventListener("click", handleUpdate));
 
   document
