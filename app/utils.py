@@ -8,11 +8,30 @@ from sqlalchemy import asc, desc
 from app.models import Image
 
 
-def get_directory_list():
-    basepath = current_app.config["UPLOAD_FOLDER"]
-    directories = [
-        d for d in os.listdir(basepath) if os.path.isdir(os.path.join(basepath, d))
-    ]
+def get_directory_list(basepath=None):
+    if basepath is None:
+        basepath = current_app.config["UPLOAD_FOLDER"]
+
+    directories = []
+
+    for entry in os.listdir(basepath):
+        full_path = os.path.join(basepath, entry)
+
+        if os.path.isdir(full_path):
+            # On vérifie si l'entrée est un sous-répertoire et ne contient pas "grids" dans son nom
+            if not any(
+                os.path.isdir(os.path.join(full_path, inner_entry))
+                for inner_entry in os.listdir(full_path)
+            ):
+                # On garde seulement la partie du chemin après le basepath
+                rel_path = os.path.relpath(
+                    full_path, start=current_app.config["UPLOAD_FOLDER"]
+                )
+                if not "grids" in rel_path:
+                    directories.append(rel_path)
+            else:
+                directories += get_directory_list(full_path)
+
     return directories
 
 
@@ -119,7 +138,7 @@ def create_image_record(image_path, directory):
     metadata_info = get_sd_info(image_path)
     if metadata_info is not None:
         image = Image(
-            path=image_path,
+            path=image_path.replace(current_app.config["UPLOAD_FOLDER"], ""),
             thumbnail=thumbnail_path,
             parameters=str(metadata_info.get("parameters", "")),
             negative_prompt=str(metadata_info.get("negative_prompt", "")),

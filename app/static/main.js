@@ -33,7 +33,7 @@ function handleUpdate(event) {
   event.preventDefault();
 
   let directoryName = window.location.pathname.includes("galerie")
-    ? window.location.pathname.split("/").pop()
+    ? document.querySelector(".title-bar__title").textContent
     : event.currentTarget.getAttribute("href").split("/").pop();
 
   const iconElement = event.currentTarget.querySelector("i");
@@ -107,7 +107,7 @@ function handleParams(event) {
 function handleDelete(event) {
   let btn = event.currentTarget;
 
-  let imageId = window.location.pathname.includes("image")
+  let imageId = window.location.pathname.includes("/image/")
     ? window.location.pathname.split("/").pop()
     : btn.parentElement.getAttribute("data-image-id");
 
@@ -115,7 +115,7 @@ function handleDelete(event) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        if (window.location.pathname.includes("image")) {
+        if (window.location.pathname.includes("/image/")) {
           window.location.href = `${window.location
             .toString()
             .slice(0, window.location.toString().lastIndexOf("/"))}/${

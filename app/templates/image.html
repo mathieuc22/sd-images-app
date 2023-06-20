@@ -2,7 +2,7 @@
 <div class="image-detail">
   <div class="image-section">
     <img
-      src="{{ url_for('uploaded_file', filename=image.path.split('/')[-2] + '/' + image.path.split('/')[-1]) }}"
+      src="{{ url_for('uploaded_file', filename=image.path) }}"
       class="full-image"
     />
   </div>
@@ -10,7 +10,7 @@
     <div class="navigation">
       <a
         class="btn"
-        href="{{ url_for('galerie', directory=image.path.split('/')[-2]) }}"
+        href="{{ url_for('galerie', directory='/'.join(image.path.split('/')[:-1])) }}"
         ><i class="fas fa-arrow-left"></i
       ></a>
       <a

@@ -43,17 +43,13 @@ def images():
     return render_template("galerie.html", images=images, directory="Toutes les images")
 
 
-@current_app.route("/galerie/<directory>")
+@current_app.route("/galerie/<path:directory>")
 def galerie(directory):
     """
     Galerie d'images pour un répertoire spécifique. Les images peuvent être triées.
     """
     order_type = request.args.get("order_type", "default")
-    query = Image.query.filter(
-        Image.path.startswith(
-            os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
-        )
-    )
+    query = Image.query.filter(Image.path.startswith(directory))
     images = get_ordered_images(query, order_type)
     return render_template("galerie.html", images=images, directory=directory)
 
@@ -229,12 +225,13 @@ def administration():
 
 
 @current_app.route("/admin/generate-thumbnails", defaults={"directory": None})
-@current_app.route("/admin/generate-thumbnails/<directory>")
+@current_app.route("/admin/generate-thumbnails/<path:directory>")
 def generate_thumbnails(directory):
     """
     Génère des vignettes pour toutes les images dans le répertoire spécifié.
     Si aucun répertoire n'est spécifié, les vignettes sont générées pour toutes les images.
     """
+    print(directory)
     directories = [directory] if directory else get_directory_list()
     for directory in directories:
         basepath = os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
