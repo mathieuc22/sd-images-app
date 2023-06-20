@@ -105,9 +105,11 @@ function handleParams(event) {
  * @param {Event} event - L'événement de clic.
  */
 function handleDelete(event) {
+  let btn = event.currentTarget;
+
   let imageId = window.location.pathname.includes("image")
     ? window.location.pathname.split("/").pop()
-    : event.target.parentElement.getAttribute("data-image-id");
+    : btn.parentElement.getAttribute("data-image-id");
 
   fetch(`/delete-image/${imageId}`, { method: "DELETE" })
     .then((response) => response.json())
@@ -120,7 +122,7 @@ function handleDelete(event) {
             data.next_image
           }`;
         } else {
-          event.target.parentElement.remove();
+          btn.parentElement.remove();
         }
       } else console.error("Failed to delete image:", data.error);
     })
@@ -142,17 +144,30 @@ function checkScroll() {
     window.scrollY > 300 ? "flex" : "none";
 }
 
+/**
+ * Cette fonction copie le texte de l'élément fourni dans le presse-papiers.
+ * Elle crée un élément de saisie temporaire pour effectuer la copie,
+ * puis supprime cet élément une fois la copie effectuée.
+ * Ensuite, elle affiche un indicateur temporaire pour signaler que le texte a été copié.
+ *
+ * @param {HTMLElement} element - L'élément dont le texte doit être copié
+ */
 function copyToClipboard(element) {
   // Créer un champ de saisie temporaire
   const tempInput = document.createElement("input");
-  // Définir sa valeur sur le texte de l'élément cible
-  tempInput.value = element.textContent;
+
+  // Définir sa valeur sur le texte de l'élément cible, avec les espaces en début et fin supprimés
+  tempInput.value = element.textContent.trim();
+
   // Ajouter l'élément au corps du document
   document.body.appendChild(tempInput);
+
   // Sélectionner le texte du champ de saisie
   tempInput.select();
+
   // Copier le texte sélectionné
   document.execCommand("copy");
+
   // Supprimer l'élément temporaire du corps du document
   document.body.removeChild(tempInput);
 
