@@ -15,32 +15,32 @@
     Tri des images : 
      {% if directory == "Toutes les images" %}
     <a href="{{ url_for('images', order_type='asc') }}"
-      ><i class="fas fa-arrow-up"></i
+      ><i class="fas fa-arrow-down"></i
     ></a>
     <a href="{{ url_for('images', order_type='desc') }}"
-      ><i class="fas fa-arrow-down"></i
+      ><i class="fas fa-arrow-up"></i
     ></a>
     {% elif directory == "Recherche" %}
       <a href="{{ url_for('search_images', q=search_query, order_type='asc') }}"
-        ><i class="fas fa-arrow-up"></i
+        ><i class="fas fa-arrow-down"></i
       ></a>
       <a
         href="{{ url_for('search_images', q=search_query, order_type='desc') }}"
-        ><i class="fas fa-arrow-down"></i
+        ><i class="fas fa-arrow-up"></i
       ></a>
     {% elif directory == "Likes" %}
       <a href="{{ url_for('images_with_likes', order_type='asc') }}"
-        ><i class="fas fa-arrow-up"></i
+        ><i class="fas fa-arrow-down"></i
       ></a>
       <a href="{{ url_for('images_with_likes', order_type='desc') }}"
-        ><i class="fas fa-arrow-down"></i
+        ><i class="fas fa-arrow-up"></i
       ></a>
     {% else %}
       <a href="{{ url_for('galerie', directory=directory, order_type='asc') }}"
-        ><i class="fas fa-arrow-up"></i
+        ><i class="fas fa-arrow-down"></i
       ></a>
       <a href="{{ url_for('galerie', directory=directory, order_type='desc') }}"
-        ><i class="fas fa-arrow-down"></i
+        ><i class="fas fa-arrow-up"></i
       ></a>
     {% endif %}
     </div>
