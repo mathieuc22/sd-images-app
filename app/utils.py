@@ -3,6 +3,8 @@ import re
 
 from flask import current_app
 from PIL import Image as PILImage
+from app.models import Image
+from sqlalchemy import asc, desc
 
 
 def get_directory_list():
@@ -87,3 +89,47 @@ def create_thumbnail(image_path, directory, size=(300, 300)):
             img.thumbnail(size)
             img.save(thumbnail_path, "JPEG")
     return relative_path
+
+
+def get_order_direction(order_type):
+    """
+    Renvoie la direction de tri en fonction de l'ordre indiqué.
+    """
+    return desc if order_type == "desc" else asc
+
+
+def get_ordered_images(query, order_type):
+    """
+    Retourne les images triées selon l'ordre spécifié. Par défaut, tri ascendant.
+    """
+    direction = get_order_direction(order_type)
+    if order_type in ["asc", "desc"]:
+        images = query.order_by(direction(Image.path)).all()
+    else:  # Tri par défaut
+        images = query.order_by(asc(Image.path)).all()
+    return images
+
+
+def create_image_record(image_path, directory):
+    """
+    Crée un enregistrement d'image à partir du chemin de l'image et du répertoire.
+    """
+    thumbnail_path = create_thumbnail(image_path, directory)
+    metadata_info = get_sd_info(image_path)
+    if metadata_info is not None:
+        image = Image(
+            path=image_path,
+            thumbnail=thumbnail_path,
+            parameters=str(metadata_info.get("parameters", "")),
+            negative_prompt=str(metadata_info.get("negative_prompt", "")),
+            steps=metadata_info.get("steps", 0),
+            sampler=metadata_info.get("sampler", ""),
+            cfg_scale=metadata_info.get("cfg_scale", 0.0),
+            seed=metadata_info.get("seed", 0),
+            size=metadata_info.get("size", ""),
+            model_hash=metadata_info.get("model_hash", ""),
+            model=metadata_info.get("model", ""),
+        )
+        return image
+    else:
+        return None

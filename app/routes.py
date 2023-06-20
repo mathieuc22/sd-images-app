@@ -9,79 +9,74 @@ from flask import (
     send_from_directory,
     url_for,
 )
-from sqlalchemy import func, and_, desc, asc
+from sqlalchemy import and_, asc, desc, func
 
 from app import db
 from app.models import Image
-from app.utils import create_thumbnail, get_directory_list, get_sd_info
+from app.utils import (
+    get_directory_list,
+    get_ordered_images,
+    create_image_record,
+)
 
 
 @current_app.route("/")
 def index():
+    """
+    Page d'accueil. Affiche une liste des répertoires disponibles.
+    """
     directories = get_directory_list()
     return render_template("index.html", directories=directories)
 
 
 @current_app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
+    """
+    Retourne un fichier du répertoire de téléchargement.
+    """
     return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
 
 
 @current_app.route("/galerie")
 def images():
+    """
+    Galerie d'images. Les images peuvent être triées.
+    """
     order_type = request.args.get("order_type", "default")
-    direction = desc if order_type == "desc" else asc
-
-    images = Image.query
-
-    if order_type in ["asc", "desc"]:
-        images = images.order_by(direction(Image.path)).all()
-    else:  # Tri par défaut
-        images = images.order_by(asc(Image.path)).all()
-
+    images = get_ordered_images(Image.query, order_type)
     return render_template("galerie.html", images=images, directory="Toutes les images")
 
 
 @current_app.route("/galerie/<directory>")
 def galerie(directory):
+    """
+    Galerie d'images pour un répertoire spécifique. Les images peuvent être triées.
+    """
     order_type = request.args.get("order_type", "default")
-    direction = desc if order_type == "desc" else asc
-
-    images = Image.query.filter(
+    query = Image.query.filter(
         Image.path.startswith(
             os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
         )
     )
-
-    if order_type in ["asc", "desc"]:
-        images = images.order_by(direction(Image.path)).all()
-    else:  # Tri par défaut
-        images = images.order_by(asc(Image.path)).all()
-
+    images = get_ordered_images(query, order_type)
     return render_template("galerie.html", images=images, directory=directory)
 
 
 @current_app.route("/search")
 def search_images():
-    search_query = request.args.get(
-        "q", ""
-    )  # obtenir la chaîne de caractères de la requête
-    keywords = search_query.split()  # diviser la chaîne en mots clés
-    # Construire une liste de conditions pour la requête. Chaque mot clé doit être dans les paramètres.
+    """
+    Recherche d'images par mots clés dans les paramètres.
+    """
+    search_query = request.args.get("q", "")
+    keywords = search_query.split()
     conditions = [
         func.lower(Image.parameters).contains(func.lower(keyword))
         for keyword in keywords
     ]
 
     order_type = request.args.get("order_type", "default")
-    direction = desc if order_type == "desc" else asc
-
-    images = Image.query.filter(and_(*conditions))
-
-    if order_type in ["asc", "desc"]:
-        images = images.order_by(direction(Image.path)).all()
-    else:  # Tri par défaut
-        images = images.order_by(asc(Image.path)).all()
+    query = Image.query.filter(and_(*conditions))
+    images = get_ordered_images(query, order_type)
 
     return render_template(
         "galerie.html", images=images, directory="Recherche", search_query=search_query
@@ -90,6 +85,10 @@ def search_images():
 
 @current_app.route("/image/<int:image_id>")
 def image_detail(image_id):
+    """
+    Récupère le détail d'une image spécifique par son ID.
+    Possibilité de retourner les détails en format JSON.
+    """
     json_output = request.args.get(
         "json", default=False, type=lambda v: v.lower() == "true"
     )
@@ -110,6 +109,9 @@ def image_detail(image_id):
 
 @current_app.route("/image/<int:image_id>/next")
 def next_image(image_id):
+    """
+    Redirige vers l'image suivante dans la liste basée sur l'ID de l'image actuelle.
+    """
     current_image = Image.query.get(image_id)
     if not current_image:
         return jsonify(error="Image not found"), 404
@@ -120,11 +122,14 @@ def next_image(image_id):
     if next_image:
         return redirect(url_for("image_detail", image_id=next_image.id))
     else:
-        return jsonify(error="No next image"), 404
+        return redirect(url_for("image_detail", image_id=current_image.id))
 
 
 @current_app.route("/image/<int:image_id>/prev")
 def prev_image(image_id):
+    """
+    Redirige vers l'image précédente dans la liste basée sur l'ID de l'image actuelle.
+    """
     current_image = Image.query.get(image_id)
     if not current_image:
         return jsonify(error="Image not found"), 404
@@ -137,74 +142,15 @@ def prev_image(image_id):
     if prev_image:
         return redirect(url_for("image_detail", image_id=prev_image.id))
     else:
-        return jsonify(error="No previous image"), 404
-
-
-@current_app.route("/admin/generate-thumbnails")
-def generate_thumbnails():
-    for directory in get_directory_list():
-        basepath = os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
-        for filename in os.listdir(basepath):
-            image_path = os.path.join(basepath, filename)
-            # Check if the image already exists in the database
-            image = Image.query.filter_by(path=image_path).first()
-            if not image and os.path.isfile(image_path):
-                thumbnail_path = create_thumbnail(image_path, directory)
-                metadata_info = get_sd_info(image_path)
-                if metadata_info is not None:
-                    # Create a new image record
-                    image = Image(
-                        path=image_path,
-                        thumbnail=thumbnail_path,
-                        parameters=str(metadata_info.get("parameters", "")),
-                        negative_prompt=str(metadata_info.get("negative_prompt", "")),
-                        steps=metadata_info.get("steps", 0),
-                        sampler=metadata_info.get("sampler", ""),
-                        cfg_scale=metadata_info.get("cfg_scale", 0.0),
-                        seed=metadata_info.get("seed", 0),
-                        size=metadata_info.get("size", ""),
-                        model_hash=metadata_info.get("model_hash", ""),
-                        model=metadata_info.get("model", ""),
-                    )
-                    db.session.add(image)
-                    print(image)
-    db.session.commit()
-    return jsonify(success=True), 200
-
-
-@current_app.route("/admin/generate-thumbnails/<directory>")
-def generate_thumbnails_for_dir(directory):
-    basepath = os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
-    for filename in os.listdir(basepath):
-        image_path = os.path.join(basepath, filename)
-        # Check if the image already exists in the database
-        image = Image.query.filter_by(path=image_path).first()
-        if not image and os.path.isfile(image_path):
-            thumbnail_path = create_thumbnail(image_path, directory)
-            metadata_info = get_sd_info(image_path)
-            if metadata_info is not None:
-                # Create a new image record
-                image = Image(
-                    path=image_path,
-                    thumbnail=thumbnail_path,
-                    parameters=str(metadata_info.get("parameters", "")),
-                    negative_prompt=str(metadata_info.get("negative_prompt", "")),
-                    steps=metadata_info.get("steps", 0),
-                    sampler=metadata_info.get("sampler", ""),
-                    cfg_scale=metadata_info.get("cfg_scale", 0.0),
-                    seed=metadata_info.get("seed", 0),
-                    size=metadata_info.get("size", ""),
-                    model_hash=metadata_info.get("model_hash", ""),
-                    model=metadata_info.get("model", ""),
-                )
-                db.session.add(image)
-                print(image)
-    db.session.commit()
-    return jsonify(success=True), 200
+        return redirect(url_for("image_detail", image_id=current_image.id))
 
 
 @current_app.route("/delete-image/<int:image_id>", methods=["DELETE"])
 def delete_image(image_id):
+    """
+    Supprime une image spécifique par son ID.
+    Supprime également sa vignette associée.
+    """
     image = Image.query.get(image_id)
     if image is None:
         return jsonify(success=False), 404
@@ -229,6 +175,9 @@ def delete_image(image_id):
 
 @current_app.route("/like-image/<int:image_id>", methods=["POST"])
 def like_image(image_id):
+    """
+    Ajoute un "j'aime" à une image spécifique par son ID.
+    """
     image = Image.query.get(image_id)
     if image is None:
         return jsonify(success=False), 404
@@ -241,6 +190,9 @@ def like_image(image_id):
 
 @current_app.route("/unlike-image/<int:image_id>", methods=["POST"])
 def unlike_image(image_id):
+    """
+    Supprime un "j'aime" d'une image spécifique par son ID.
+    """
     image = Image.query.get(image_id)
     if image is None:
         return jsonify(success=False), 404
@@ -253,6 +205,10 @@ def unlike_image(image_id):
 
 @current_app.route("/images-with-likes")
 def images_with_likes():
+    """
+    Affiche une galerie d'images qui ont été "aimées".
+    Les images peuvent être triées.
+    """
     order_type = request.args.get("order_type", "default")
     direction = desc if order_type == "desc" else asc
 
@@ -268,6 +224,32 @@ def images_with_likes():
 
 @current_app.route("/admin")
 def administration():
+    """
+    Page d'administration. Permet de générer des vignettes et d'uploader de nouvelles images.
+    """
     return render_template(
         "admin.html", uploaded_folder=current_app.config["UPLOAD_FOLDER"]
     )
+
+
+@current_app.route("/admin/generate-thumbnails", defaults={"directory": None})
+@current_app.route("/admin/generate-thumbnails/<directory>")
+def generate_thumbnails(directory):
+    """
+    Génère des vignettes pour toutes les images dans le répertoire spécifié.
+    Si aucun répertoire n'est spécifié, les vignettes sont générées pour toutes les images.
+    """
+    directories = [directory] if directory else get_directory_list()
+    for directory in directories:
+        basepath = os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
+        for filename in os.listdir(basepath):
+            image_path = os.path.join(basepath, filename)
+            # Check if the image already exists in the database
+            image = Image.query.filter_by(path=image_path).first()
+            if not image and os.path.isfile(image_path):
+                image = create_image_record(image_path, directory)
+                if image:
+                    db.session.add(image)
+                    print(image)
+    db.session.commit()
+    return jsonify(success=True), 200
