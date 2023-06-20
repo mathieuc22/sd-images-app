@@ -11,26 +11,31 @@
       <a
         class="btn"
         href="{{ url_for('galerie', directory=image.path.split('/')[-2]) }}"
-        >Retour à la galerie</a
-      >
+        ><i class="fas fa-arrow-left"></i
+      ></a>
       <a
         class="btn"
         id="prev-btn"
         href="{{ url_for('prev_image', image_id=image.id) }}"
-        >Previous</a
-      >
+        ><i class="fas fa-chevron-left"></i
+      ></a>
       <a
         class="btn"
         id="next-btn"
         href="{{ url_for('next_image', image_id=image.id) }}"
-        >Next</a
+        ><i class="fas fa-chevron-right"></i
+      ></a>
+      <button
+        class="btn like-btn {% if image.liked %} liked {% endif %}"
+        data-image-id="{{ image.id }}"
       >
-    </div>
-    <div class="navigation">
-      <button class="btn like-btn">
-        {% if image.liked %} Unlike {% else %} Like {% endif %}
+        <i
+          class="{% if image.liked %} fas {% else %} far {% endif %} fa-heart"
+        ></i>
       </button>
-      <button class="btn delete-btn" id="delete-btn">Delete</button>
+      <button class="btn delete-btn" id="delete-btn">
+        <i class="fas fa-trash"></i>
+      </button>
     </div>
 
     <div class="image-content">
@@ -39,34 +44,13 @@
       in keys %} {% if image.__dict__[key] %}
       <div class="image-info-item">
         <h3 class="image-info-item__title">{{ key|title }}</h3>
-        <p class="image-info-item__content">{{ image.__dict__[key] }}</p>
+        <p class="image-info-item__content copiable">
+          {{ image.__dict__[key] }}
+        </p>
       </div>
       {% endif %} {% endfor %}
     </div>
   </div>
 </div>
-
-<script>
-  document.addEventListener("keydown", function (event) {
-    const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Delete"
-
-    if (key === "ArrowLeft") {
-      const prevBtn = document.getElementById("prev-btn");
-      if (prevBtn) {
-        window.location.href = prevBtn.href;
-      }
-    } else if (key === "ArrowRight") {
-      const nextBtn = document.getElementById("next-btn");
-      if (nextBtn) {
-        window.location.href = nextBtn.href;
-      }
-    } else if (key === "Delete") {
-      const deleteBtn = document.getElementById("delete-btn");
-      if (deleteBtn) {
-        deleteBtn.click();
-      }
-    }
-  });
-</script>
 
 {% endblock %}

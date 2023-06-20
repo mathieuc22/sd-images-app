@@ -3,8 +3,9 @@ import re
 
 from flask import current_app
 from PIL import Image as PILImage
-from app.models import Image
 from sqlalchemy import asc, desc
+
+from app.models import Image
 
 
 def get_directory_list():

@@ -181,6 +181,8 @@ input[type="submit"] {
 
 .image-info-item__content {
   margin: 0;
+  cursor: pointer;
+  position: relative;
 }
 
 /* Navigation */
@@ -370,4 +372,20 @@ nav {
   to {
     transform: rotate(359deg);
   }
+}
+
+.copy-indicator {
+  position: absolute;
+  color: #fff;
+  transition: all 0.3s;
+  right: 50%;
+  top: 50%;
+  transform: translateX(-50%);
+  transform: translateY(-50%);
+  background: var(--color-accent);
+  padding: 1px 6px;
+  border-radius: 20px;
+  color: var(--color-secondary);
+  font-weight: 700;
+  font-size: 0.8rem;
 }

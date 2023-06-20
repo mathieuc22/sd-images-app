@@ -61,17 +61,31 @@ function handleUpdate(event) {
  * @param {Event} event - L'événement de clic.
  */
 function handleLike(event) {
+  let btn = event.currentTarget;
+
   let imageId = window.location.pathname.includes("/image/")
     ? window.location.pathname.split("/").pop()
-    : event.target.parentElement.getAttribute("data-image-id");
-  const isLiked = event.target.textContent.trim().toLowerCase() === "unlike";
+    : btn.getAttribute("data-image-id");
+
+  const isLiked = btn.classList.contains("liked");
+
   const url = isLiked ? `/unlike-image/${imageId}` : `/like-image/${imageId}`;
 
   fetch(url, { method: "POST" })
     .then((response) => response.json())
     .then((data) => {
-      if (data.success) event.target.textContent = isLiked ? "Like" : "Unlike";
-      else console.error("Failed to like/unlike image:", data.error);
+      if (data.success) {
+        // Modifie la classe du bouton et l'icône en fonction de si l'image est aimée ou non
+        if (isLiked) {
+          btn.classList.remove("liked");
+          btn.innerHTML = "<i class='far fa-heart'></i>";
+        } else {
+          btn.classList.add("liked");
+          btn.innerHTML = "<i class='fas fa-heart'></i>";
+        }
+      } else {
+        console.error("Failed to like/unlike image:", data.error);
+      }
     })
     .catch(handleError);
 }
@@ -128,6 +142,32 @@ function checkScroll() {
     window.scrollY > 300 ? "flex" : "none";
 }
 
+function copyToClipboard(element) {
+  // Créer un champ de saisie temporaire
+  const tempInput = document.createElement("input");
+  // Définir sa valeur sur le texte de l'élément cible
+  tempInput.value = element.textContent;
+  // Ajouter l'élément au corps du document
+  document.body.appendChild(tempInput);
+  // Sélectionner le texte du champ de saisie
+  tempInput.select();
+  // Copier le texte sélectionné
+  document.execCommand("copy");
+  // Supprimer l'élément temporaire du corps du document
+  document.body.removeChild(tempInput);
+
+  // Affiche une indication que le texte a été copié
+  const copyIndicator = document.createElement("span");
+  copyIndicator.textContent = "Copié !";
+  copyIndicator.classList.add("copy-indicator");
+  element.appendChild(copyIndicator);
+
+  // Fait disparaître l'indicateur après 2 secondes
+  setTimeout(() => {
+    element.removeChild(copyIndicator);
+  }, 2000);
+}
+
 // Attache les écouteurs d'événements lorsque le document est chargé
 window.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname.includes("admin")) {
@@ -152,6 +192,33 @@ window.addEventListener("DOMContentLoaded", () => {
     .querySelectorAll(".params-btn")
     .forEach((btn) => btn.addEventListener("click", handleParams));
 
+  document.querySelectorAll(".image-info-item__content").forEach((element) => {
+    element.addEventListener("click", () => copyToClipboard(element));
+  });
+
   document.querySelector("#back-to-top").addEventListener("click", scrollToTop);
   window.addEventListener("scroll", checkScroll);
+
+  document.addEventListener("keydown", function (event) {
+    const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Delete"
+
+    if (window.location.pathname.includes("/image/")) {
+      if (key === "ArrowLeft") {
+        const prevBtn = document.getElementById("prev-btn");
+        if (prevBtn) {
+          window.location.href = prevBtn.href;
+        }
+      } else if (key === "ArrowRight") {
+        const nextBtn = document.getElementById("next-btn");
+        if (nextBtn) {
+          window.location.href = nextBtn.href;
+        }
+      } else if (key === "Delete") {
+        const deleteBtn = document.getElementById("delete-btn");
+        if (deleteBtn) {
+          deleteBtn.click();
+        }
+      }
+    }
+  });
 });

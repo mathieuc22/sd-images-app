@@ -54,10 +54,10 @@
           loading="lazy"
         />
       </a>
-      <button class="btn like-btn">
-        {% if image.liked %} Unlike {% else %} Like {% endif %}
+      <button class="btn like-btn {% if image.liked %} liked {% endif %}" data-image-id="{{ image.id }}">
+        <i class="{% if image.liked %} fas {% else %} far {% endif %} fa-heart"></i>
       </button>
-      <button class="btn delete-btn">Delete</button>
+      <button class="btn delete-btn"><i class="fas fa-trash"></i></button>
       <button class="btn params-btn">Params</button>
       <div class="card-content">
         <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>

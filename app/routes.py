@@ -13,11 +13,7 @@ from sqlalchemy import and_, asc, desc, func
 
 from app import db
 from app.models import Image
-from app.utils import (
-    get_directory_list,
-    get_ordered_images,
-    create_image_record,
-)
+from app.utils import create_image_record, get_directory_list, get_ordered_images
 
 
 @current_app.route("/")
