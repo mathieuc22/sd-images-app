@@ -1,52 +1,88 @@
 {% extends 'base.html' %} {% block content %}
-<div class="title">
-  <h1>{{ directory }}</h1>
-  <div class="count">{{ images|length }}</div>
+<div class="title-bar">
+  <h1 class="title-bar__title">{{ directory }}</h1>
+  <div class="title-bar__count">{{ images|length }} images</div>
   {% if directory not in ["Likes", "Recherche", "Toutes les images"] %}
+  <div>
+  Mettre à jour : 
   <a
-    class="update"
+    class="title-bar__update"
     href="{{ url_for('generate_thumbnails_for_dir', directory=directory) }}"
     ><i class="fas fa-sync"></i
-  ></a>
+  ></a></div>
   {% endif %}
-</div>
-<div class="gallery">
-  {% for image in images|sort(attribute='path') %}
-  <div class="card" data-image-id="{{ image.id }}">
-    <a href="{{ url_for('image_detail', image_id=image.id) }}">
-      <img
-        src="{{ url_for('static', filename=image.thumbnail) }}"
-        loading="lazy"
-      />
-    </a>
-    <button class="btn like-btn">
-      {% if image.liked %} Unlike {% else %} Like {% endif %}
-    </button>
-    <button class="btn delete-btn">Delete</button>
-    <button class="btn params-btn">Params</button>
-    <div class="card-content">
-      <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
-      <p>
-        <strong>Parameters:</strong> {{ image.parameters|truncate(80, end='...')
-        }}
-      </p>
-      {% if image.steps %}
-      <p><strong>Steps:</strong> {{ image.steps }}</p>
-      {% endif %} {% if image.sampler %}
-      <p><strong>Sampler:</strong> {{ image.sampler }}</p>
-      {% endif %} {% if image.cfg_scale %}
-      <p><strong>CFG Scale:</strong> {{ image.cfg_scale }}</p>
-      {% endif %} {% if image.seed %}
-      <p><strong>Seed:</strong> {{ image.seed }}</p>
-      {% endif %} {% if image.size %}
-      <p><strong>Size:</strong> {{ image.size }}</p>
-      {% endif %} {% if image.model_hash %}
-      <p><strong>Model Hash:</strong> {{ image.model_hash }}</p>
-      {% endif %} {% if image.model %}
-      <p><strong>Model:</strong> {{ image.model }}</p>
-      {% endif %}
+  <div class="title-bar__sort">
+    Tri des images : 
+     {% if directory == "Toutes les images" %}
+    <a href="{{ url_for('images', order_type='asc') }}"
+      ><i class="fas fa-arrow-up"></i
+    ></a>
+    <a href="{{ url_for('images', order_type='desc') }}"
+      ><i class="fas fa-arrow-down"></i
+    ></a>
+    {% elif directory == "Recherche" %}
+      <a href="{{ url_for('search_images', q=search_query, order_type='asc') }}"
+        ><i class="fas fa-arrow-up"></i
+      ></a>
+      <a
+        href="{{ url_for('search_images', q=search_query, order_type='desc') }}"
+        ><i class="fas fa-arrow-down"></i
+      ></a>
+    {% elif directory == "Likes" %}
+      <a href="{{ url_for('images_with_likes', order_type='asc') }}"
+        ><i class="fas fa-arrow-up"></i
+      ></a>
+      <a href="{{ url_for('images_with_likes', order_type='desc') }}"
+        ><i class="fas fa-arrow-down"></i
+      ></a>
+    {% else %}
+      <a href="{{ url_for('galerie', directory=directory, order_type='asc') }}"
+        ><i class="fas fa-arrow-up"></i
+      ></a>
+      <a href="{{ url_for('galerie', directory=directory, order_type='desc') }}"
+        ><i class="fas fa-arrow-down"></i
+      ></a>
+    {% endif %}
     </div>
   </div>
-  {% endfor %}
+  <div class="gallery">
+    {% for image in images %}
+    <div class="card" data-image-id="{{ image.id }}">
+      <a href="{{ url_for('image_detail', image_id=image.id) }}">
+        <img
+          src="{{ url_for('static', filename=image.thumbnail) }}"
+          loading="lazy"
+        />
+      </a>
+      <button class="btn like-btn">
+        {% if image.liked %} Unlike {% else %} Like {% endif %}
+      </button>
+      <button class="btn delete-btn">Delete</button>
+      <button class="btn params-btn">Params</button>
+      <div class="card-content">
+        <p><strong>File:</strong> {{ image.path.split('/')[-1] }}</p>
+        <p>
+          <strong>Parameters:</strong> {{ image.parameters|truncate(80,
+          end='...') }}
+        </p>
+        {% if image.steps %}
+        <p><strong>Steps:</strong> {{ image.steps }}</p>
+        {% endif %} {% if image.sampler %}
+        <p><strong>Sampler:</strong> {{ image.sampler }}</p>
+        {% endif %} {% if image.cfg_scale %}
+        <p><strong>CFG Scale:</strong> {{ image.cfg_scale }}</p>
+        {% endif %} {% if image.seed %}
+        <p><strong>Seed:</strong> {{ image.seed }}</p>
+        {% endif %} {% if image.size %}
+        <p><strong>Size:</strong> {{ image.size }}</p>
+        {% endif %} {% if image.model_hash %}
+        <p><strong>Model Hash:</strong> {{ image.model_hash }}</p>
+        {% endif %} {% if image.model %}
+        <p><strong>Model:</strong> {{ image.model }}</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endblock %}
 </div>
-{% endblock %}

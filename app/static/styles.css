@@ -307,23 +307,21 @@ nav {
   color: var(--color-accent);
 }
 
-.count {
-  position: absolute;
-  top: 20px;
-  right: -10px;
+.title-bar {
+  position: relative;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.title-bar__count {
   background: var(--color-accent);
   padding: 1px 6px;
   border-radius: 20px;
   color: var(--color-secondary);
   font-weight: 700;
   font-size: 0.8rem;
-}
-
-.update {
-  position: absolute;
-  top: 40px;
-  right: -10px;
-  padding: 1px 6px;
 }
 
 .nav-search-form {

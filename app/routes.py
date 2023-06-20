@@ -9,7 +9,7 @@ from flask import (
     send_from_directory,
     url_for,
 )
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, desc, asc
 
 from app import db
 from app.models import Image
@@ -29,17 +29,35 @@ def uploaded_file(filename):
 
 @current_app.route("/galerie")
 def images():
-    images = Image.query.all()
+    order_type = request.args.get("order_type", "default")
+    direction = desc if order_type == "desc" else asc
+
+    images = Image.query
+
+    if order_type in ["asc", "desc"]:
+        images = images.order_by(direction(Image.path)).all()
+    else:  # Tri par défaut
+        images = images.order_by(asc(Image.path)).all()
+
     return render_template("galerie.html", images=images, directory="Toutes les images")
 
 
 @current_app.route("/galerie/<directory>")
 def galerie(directory):
+    order_type = request.args.get("order_type", "default")
+    direction = desc if order_type == "desc" else asc
+
     images = Image.query.filter(
         Image.path.startswith(
             os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
         )
-    ).all()
+    )
+
+    if order_type in ["asc", "desc"]:
+        images = images.order_by(direction(Image.path)).all()
+    else:  # Tri par défaut
+        images = images.order_by(asc(Image.path)).all()
+
     return render_template("galerie.html", images=images, directory=directory)
 
 
@@ -54,8 +72,20 @@ def search_images():
         func.lower(Image.parameters).contains(func.lower(keyword))
         for keyword in keywords
     ]
-    images = Image.query.filter(and_(*conditions)).all()  # effectuer la recherche
-    return render_template("galerie.html", images=images, directory="Recherche")
+
+    order_type = request.args.get("order_type", "default")
+    direction = desc if order_type == "desc" else asc
+
+    images = Image.query.filter(and_(*conditions))
+
+    if order_type in ["asc", "desc"]:
+        images = images.order_by(direction(Image.path)).all()
+    else:  # Tri par défaut
+        images = images.order_by(asc(Image.path)).all()
+
+    return render_template(
+        "galerie.html", images=images, directory="Recherche", search_query=search_query
+    )
 
 
 @current_app.route("/image/<int:image_id>")
@@ -223,7 +253,16 @@ def unlike_image(image_id):
 
 @current_app.route("/images-with-likes")
 def images_with_likes():
-    images = Image.query.filter(Image.liked == True).all()
+    order_type = request.args.get("order_type", "default")
+    direction = desc if order_type == "desc" else asc
+
+    images = Image.query.filter(Image.liked == True)
+
+    if order_type in ["asc", "desc"]:
+        images = images.order_by(direction(Image.path)).all()
+    else:  # Tri par défaut
+        images = images.order_by(asc(Image.path)).all()
+
     return render_template("galerie.html", images=images, directory="Likes")
 
 
