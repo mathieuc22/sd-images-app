@@ -241,12 +241,11 @@ nav {
 .directories {
   list-style: none;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 15px;
   max-width: 700px;
-  margin: auto;
 }
 
 .directory {
@@ -278,9 +277,19 @@ nav {
   color: var(--color-secondary);
 }
 
+.like-btn:hover {
+  background-color: transparent;
+  color: var(--color-accent-green);
+}
+
 .delete-btn {
   background-color: var(--color-accent);
   color: var(--color-secondary);
+}
+
+.delete-btn:hover {
+  background-color: transparent;
+  color: var(--color-accent);
 }
 
 #back-to-top {
@@ -388,4 +397,11 @@ nav {
   color: var(--color-secondary);
   font-weight: 700;
   font-size: 0.8rem;
+}
+
+.columns {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
 }

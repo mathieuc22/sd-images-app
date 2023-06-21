@@ -1,10 +1,15 @@
 {% extends 'base.html' %} {% block content %}
 <div class="image-detail">
   <div class="image-section">
-    <img
-      src="{{ url_for('uploaded_file', filename=image.path) }}"
-      class="full-image"
-    />
+    <a
+      href="{{ url_for('uploaded_file', filename=image.path) }}"
+      target="_blank"
+    >
+      <img
+        src="{{ url_for('uploaded_file', filename=image.path) }}"
+        class="full-image"
+      />
+    </a>
   </div>
   <div class="info-section">
     <div class="navigation">
@@ -52,5 +57,4 @@
     </div>
   </div>
 </div>
-
 {% endblock %}

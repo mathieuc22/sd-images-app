@@ -1,19 +1,58 @@
 {% extends 'base.html' %} {% block content %}
 <h1 class="title">Répertoires</h1>
-<div class="directories">
-  {% for directory in directories|sort %}
-  <div class="directory">
-    <a
-      class="directory__link"
-      href="{{ url_for('galerie', directory=directory) }}"
-      >{{ directory }}</a
-    >
-    <a
-      class="directory__update"
-      href="{{ url_for('generate_thumbnails', directory=directory) }}"
-      ><i class="fas fa-sync"></i
-    ></a>
+<div class="columns">
+  <div class="directories">
+    <h2 class="title">img2img</h2>
+    {% for directory in directories|sort(reverse = True) %} {% if
+    'img2img-images' in directory %}
+    <div class="directory">
+      <a
+        class="directory__link"
+        href="{{ url_for('galerie', directory=directory) }}"
+        >{{ directory.split('/').pop() }}</a
+      >
+      <a
+        class="directory__update"
+        href="{{ url_for('generate_thumbnails', directory=directory) }}"
+        ><i class="fas fa-sync"></i
+      ></a>
+    </div>
+    {% endif %} {% endfor %}
   </div>
-  {% endfor %}
+  <div class="directories">
+    <h2 class="title">txt2img</h2>
+    {% for directory in directories|sort(reverse = True) %} {% if
+    'txt2img-images' in directory %}
+    <div class="directory">
+      <a
+        class="directory__link"
+        href="{{ url_for('galerie', directory=directory) }}"
+        >{{ directory.split('/').pop() }}</a
+      >
+      <a
+        class="directory__update"
+        href="{{ url_for('generate_thumbnails', directory=directory) }}"
+        ><i class="fas fa-sync"></i
+      ></a>
+    </div>
+    {% endif %} {% endfor %}
+  </div>
+  <div class="directories">
+    <h2 class="title">extra</h2>
+    {% for directory in directories|sort %} {% if 'extra' in directory %}
+    <div class="directory">
+      <a
+        class="directory__link"
+        href="{{ url_for('galerie', directory=directory) }}"
+        >{{ directory }}</a
+      >
+      <a
+        class="directory__update"
+        href="{{ url_for('generate_thumbnails', directory=directory) }}"
+        ><i class="fas fa-sync"></i
+      ></a>
+    </div>
+    {% endif %} {% endfor %}
+  </div>
 </div>
 {% endblock %}

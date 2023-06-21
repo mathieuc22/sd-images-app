@@ -34,6 +34,7 @@ def uploaded_file(filename):
 
 
 @current_app.route("/galerie")
+@current_app.route("/galerie/")
 def images():
     """
     Galerie d'images. Les images peuvent être triées.
