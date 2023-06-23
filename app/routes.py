@@ -232,18 +232,18 @@ def generate_thumbnails(directory):
     Génère des vignettes pour toutes les images dans le répertoire spécifié.
     Si aucun répertoire n'est spécifié, les vignettes sont générées pour toutes les images.
     """
-    print(directory)
     directories = [directory] if directory else get_directory_list()
     for directory in directories:
         basepath = os.path.join(current_app.config["UPLOAD_FOLDER"], directory)
         for filename in os.listdir(basepath):
             image_path = os.path.join(basepath, filename)
             # Check if the image already exists in the database
-            image = Image.query.filter_by(path=image_path).first()
+            image = Image.query.filter_by(
+                path=image_path.replace(current_app.config["UPLOAD_FOLDER"], "")
+            ).first()
             if not image and os.path.isfile(image_path):
                 image = create_image_record(image_path, directory)
                 if image:
                     db.session.add(image)
-                    print(image)
     db.session.commit()
     return jsonify(success=True), 200
