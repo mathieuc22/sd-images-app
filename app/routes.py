@@ -39,9 +39,17 @@ def images():
     """
     Galerie d'images. Les images peuvent être triées.
     """
+    likes = request.args.get("likes", type=lambda v: v.lower() == "true", default=None)
     order_type = request.args.get("order_type", "default")
-    images = get_ordered_images(Image.query, order_type)
-    return render_template("galerie.html", images=images, directory="Toutes les images")
+
+    query = Image.query
+    if likes is not None:
+        query = query.filter(Image.liked == likes)
+
+    images = get_ordered_images(query, order_type)
+    return render_template(
+        "galerie.html", images=images, likes=likes, directory="Toutes les images"
+    )
 
 
 @current_app.route("/galerie/<path:directory>")
@@ -49,10 +57,17 @@ def galerie(directory):
     """
     Galerie d'images pour un répertoire spécifique. Les images peuvent être triées.
     """
+    likes = request.args.get("likes", type=lambda v: v.lower() == "true", default=None)
     order_type = request.args.get("order_type", "default")
+
     query = Image.query.filter(Image.path.startswith(directory))
+    if likes is not None:
+        query = query.filter(Image.liked == likes)
+
     images = get_ordered_images(query, order_type)
-    return render_template("galerie.html", images=images, directory=directory)
+    return render_template(
+        "galerie.html", images=images, likes=likes, directory=directory
+    )
 
 
 @current_app.route("/search")
@@ -60,6 +75,7 @@ def search_images():
     """
     Recherche d'images par mots clés dans les paramètres.
     """
+    likes = request.args.get("likes", type=lambda v: v.lower() == "true", default=None)
     search_query = request.args.get("q", "")
     keywords = search_query.split()
     conditions = [
@@ -69,10 +85,17 @@ def search_images():
 
     order_type = request.args.get("order_type", "default")
     query = Image.query.filter(and_(*conditions))
+    if likes is not None:
+        query = query.filter(Image.liked == likes)
+
     images = get_ordered_images(query, order_type)
 
     return render_template(
-        "galerie.html", images=images, directory="Recherche", search_query=search_query
+        "galerie.html",
+        images=images,
+        likes=likes,
+        directory="Recherche",
+        search_query=search_query,
     )
 
 
@@ -82,6 +105,7 @@ def image_detail(image_id):
     Récupère le détail d'une image spécifique par son ID.
     Possibilité de retourner les détails en format JSON.
     """
+    likes = request.args.get("likes", type=lambda v: v.lower() == "true", default=None)
     json_output = request.args.get(
         "json", default=False, type=lambda v: v.lower() == "true"
     )
@@ -95,7 +119,7 @@ def image_detail(image_id):
 
             return jsonify(current_image), 200
         else:
-            return render_template("image.html", image=current_image)
+            return render_template("image.html", image=current_image, likes=likes)
     else:
         return jsonify(error="Image not found"), 404
 
@@ -105,15 +129,20 @@ def next_image(image_id):
     """
     Redirige vers l'image suivante dans la liste basée sur l'ID de l'image actuelle.
     """
+    likes = request.args.get("likes", type=lambda v: v.lower() == "true", default=None)
+
     current_image = Image.query.get(image_id)
     if not current_image:
         return jsonify(error="Image not found"), 404
 
-    next_image = (
-        Image.query.filter(Image.path > current_image.path).order_by(Image.path).first()
-    )
+    query = Image.query.filter(Image.path > current_image.path)
+    if likes is not None:
+        query = query.filter(Image.liked == likes)
+
+    next_image = query.order_by(Image.path).first()
+
     if next_image:
-        return redirect(url_for("image_detail", image_id=next_image.id))
+        return redirect(url_for("image_detail", image_id=next_image.id, likes=likes))
     else:
         return redirect(url_for("image_detail", image_id=current_image.id))
 
@@ -123,17 +152,20 @@ def prev_image(image_id):
     """
     Redirige vers l'image précédente dans la liste basée sur l'ID de l'image actuelle.
     """
+    likes = request.args.get("likes", type=lambda v: v.lower() == "true", default=None)
+
     current_image = Image.query.get(image_id)
     if not current_image:
         return jsonify(error="Image not found"), 404
 
-    prev_image = (
-        Image.query.filter(Image.path < current_image.path)
-        .order_by(Image.path.desc())
-        .first()
-    )
+    query = Image.query.filter(Image.path < current_image.path)
+    if likes is not None:
+        query = query.filter(Image.liked == likes)
+
+    prev_image = query.order_by(Image.path.desc()).first()
+
     if prev_image:
-        return redirect(url_for("image_detail", image_id=prev_image.id))
+        return redirect(url_for("image_detail", image_id=prev_image.id, likes=likes))
     else:
         return redirect(url_for("image_detail", image_id=current_image.id))
 
@@ -195,25 +227,6 @@ def unlike_image(image_id):
     db.session.commit()
 
     return jsonify(success=True), 200
-
-
-@current_app.route("/images-with-likes")
-def images_with_likes():
-    """
-    Affiche une galerie d'images qui ont été "aimées".
-    Les images peuvent être triées.
-    """
-    order_type = request.args.get("order_type", "default")
-    direction = desc if order_type == "desc" else asc
-
-    images = Image.query.filter(Image.liked == True)
-
-    if order_type in ["asc", "desc"]:
-        images = images.order_by(direction(Image.path)).all()
-    else:  # Tri par défaut
-        images = images.order_by(asc(Image.path)).all()
-
-    return render_template("galerie.html", images=images, directory="Likes")
 
 
 @current_app.route("/admin")

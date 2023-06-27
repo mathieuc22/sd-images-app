@@ -2,7 +2,7 @@
 <div class="title-bar">
   <h1 class="title-bar__title">{{ directory }}</h1>
   <div class="title-bar__count">{{ images|length }} images</div>
-  {% if directory not in ["Likes", "Recherche", "Toutes les images"] %}
+  {% if directory not in ["Recherche", "Toutes les images"] %}
   <div>
     Répertoire parent :
     <a
@@ -18,13 +18,58 @@
     ><i class="fas fa-sync"></i
   ></a></div>
   {% endif %}
+  <div>
+    Likes :
+
+    {% if directory == "Toutes les images" %}
+      {% if likes == True %}
+        <a
+          href="{{ url_for('images') }}"
+          ><i class="fas fa-heart"></i
+        ></a>
+      {% else %}
+        <a
+        href="{{ url_for('images', likes=True) }}"
+        ><i class="far fa-heart"></i
+        ></a>
+      {% endif %}
+    {% elif directory == "Recherche" %}
+      {% if likes == True %}
+      <a
+        href="{{ url_for('search_images', q=search_query) }}"
+        ><i class="fas fa-heart"></i
+      ></a>
+      {% else %}
+      <a
+        href="{{ url_for('search_images', q=search_query, likes=True) }}"
+        ><i class="far fa-heart"></i
+      ></a>
+      {% endif %}
+    {% else %}
+      {% if likes == True %}
+        <a
+          href="{{ url_for('galerie', directory=directory) }}"
+          ><i class="fas fa-heart"></i
+        ></a>
+      {% else %}
+        <a
+        href="{{ url_for('galerie', directory=directory, likes=True) }}"
+        ><i class="far fa-heart"></i
+        ></a>
+      {% endif %}
+    {% endif %}
+
+
+
+
+</div>
   <div class="title-bar__sort">
     Tri des images : 
      {% if directory == "Toutes les images" %}
-    <a href="{{ url_for('images', order_type='asc') }}"
+    <a href="{{ url_for('images', order_type='asc', likes=likes) }}"
       ><i class="fas fa-arrow-down"></i
     ></a>
-    <a href="{{ url_for('images', order_type='desc') }}"
+    <a href="{{ url_for('images', order_type='desc', likes=likes) }}"
       ><i class="fas fa-arrow-up"></i
     ></a>
     {% elif directory == "Recherche" %}
@@ -35,18 +80,11 @@
         href="{{ url_for('search_images', q=search_query, order_type='desc') }}"
         ><i class="fas fa-arrow-up"></i
       ></a>
-    {% elif directory == "Likes" %}
-      <a href="{{ url_for('images_with_likes', order_type='asc') }}"
-        ><i class="fas fa-arrow-down"></i
-      ></a>
-      <a href="{{ url_for('images_with_likes', order_type='desc') }}"
-        ><i class="fas fa-arrow-up"></i
-      ></a>
     {% else %}
-      <a href="{{ url_for('galerie', directory=directory, order_type='asc') }}"
+      <a href="{{ url_for('galerie', directory=directory, order_type='asc', likes=likes) }}"
         ><i class="fas fa-arrow-down"></i
       ></a>
-      <a href="{{ url_for('galerie', directory=directory, order_type='desc') }}"
+      <a href="{{ url_for('galerie', directory=directory, order_type='desc', likes=likes) }}"
         ><i class="fas fa-arrow-up"></i
       ></a>
     {% endif %}
@@ -55,7 +93,7 @@
   <div class="gallery">
     {% for image in images %}
     <div class="card" data-image-id="{{ image.id }}">
-      <a href="{{ url_for('image_detail', image_id=image.id) }}">
+      <a href="{{ url_for('image_detail', image_id=image.id, likes=likes) }}">
         <img
           src="{{ url_for('static', filename=image.thumbnail) }}"
           loading="lazy"

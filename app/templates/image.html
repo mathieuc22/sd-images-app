@@ -21,13 +21,13 @@
       <a
         class="btn"
         id="prev-btn"
-        href="{{ url_for('prev_image', image_id=image.id) }}"
+        href="{{ url_for('prev_image', image_id=image.id, likes=likes) }}"
         ><i class="fas fa-chevron-left"></i
       ></a>
       <a
         class="btn"
         id="next-btn"
-        href="{{ url_for('next_image', image_id=image.id) }}"
+        href="{{ url_for('next_image', image_id=image.id, likes=likes) }}"
         ><i class="fas fa-chevron-right"></i
       ></a>
       <button
