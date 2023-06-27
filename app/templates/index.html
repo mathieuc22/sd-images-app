@@ -11,11 +11,6 @@
         href="{{ url_for('galerie', directory=directory) }}"
         >{{ directory.split('/').pop() }}</a
       >
-      <a
-        class="directory__update"
-        href="{{ url_for('generate_thumbnails', directory=directory) }}"
-        ><i class="fas fa-sync"></i
-      ></a>
     </div>
     {% endif %} {% endfor %}
   </div>
@@ -29,11 +24,6 @@
         href="{{ url_for('galerie', directory=directory) }}"
         >{{ directory.split('/').pop() }}</a
       >
-      <a
-        class="directory__update"
-        href="{{ url_for('generate_thumbnails', directory=directory) }}"
-        ><i class="fas fa-sync"></i
-      ></a>
     </div>
     {% endif %} {% endfor %}
   </div>
@@ -46,11 +36,6 @@
         href="{{ url_for('galerie', directory=directory) }}"
         >{{ directory }}</a
       >
-      <a
-        class="directory__update"
-        href="{{ url_for('generate_thumbnails', directory=directory) }}"
-        ><i class="fas fa-sync"></i
-      ></a>
     </div>
     {% endif %} {% endfor %}
   </div>
