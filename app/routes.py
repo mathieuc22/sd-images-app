@@ -149,7 +149,8 @@ def delete_image(image_id):
         return jsonify(success=False), 404
 
     try:
-        os.remove(image.path)  # delete original image
+        image_path = os.path.join(current_app.config["UPLOAD_FOLDER"], image.path)
+        os.remove(image_path)  # delete original image
         os.remove(
             os.path.join(current_app.static_folder, image.thumbnail)
         )  # delete thumbnail
